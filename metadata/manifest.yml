@@ -1,0 +1,31 @@
+Name: rabbitmq
+Cartridge-Short-Name: RABBITMQ
+Cartridge-Version: '1.0.0'
+Compatible-Versions:
+  - '1.0.0'
+Cartridge-Vendor: commonsmachinery
+Categories:
+  - embedded
+  - service
+  - amqp
+  - messaging
+Source-Url: https://github.com/commonsmachinery/openshift-rabbitmq-cart.git
+Display-Name: RabbitMQ
+Description: RabbitMQ message broker.  Note: this cartridge does not yet support scaling.
+Version: '3.2.4'
+Versions:
+  - '3.2.4'
+License: 'Mozilla Public License 1.1' 
+License-Url: https://www.rabbitmq.com/mpl.html
+Vendor: Pivotal
+Website: https://www.rabbitmq.com/
+Provides:
+  - rabbitmq
+  - amqp
+Scaling:
+  Min: 1
+  Max: 1
+Endpoints:
+  - Private-IP-Name: BROKER_IP
+    Private-Port-Name: BROKER_PORT
+    Private-Port: 5672

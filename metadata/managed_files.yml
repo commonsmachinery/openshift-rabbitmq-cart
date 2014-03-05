@@ -1,0 +1,14 @@
+locked_files:
+- bin/
+- bin/*
+- conf/
+- conf/rabbitmq.config.erb.install
+- env/
+- env/*
+- metadata/
+- metadata/*
+- versions/
+- versions/*
+setup_rewritten:
+- env/OPENSHIFT_RABBITMQ_PATH_ELEMENT
+- env/ERL_DIR
