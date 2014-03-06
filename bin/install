@@ -11,11 +11,11 @@ echo 'Generating username and password'
 
 username=$(generate_username)
 password=$(generate_password)
+conn_url="amqp://${username}:${password}@${OPENSHIFT_RABBITMQ_BROKER_IP}:${OPENSHIFT_RABBITMQ_BROKER_PORT}/"
 
 set_env_var 'OPENSHIFT_RABBITMQ_USERNAME' "$username" "$envdir"
 set_env_var 'OPENSHIFT_RABBITMQ_PASSWORD' "$password" "$envdir"
-
-set_env_var 'OPENSHIFT_RABBITMQ_URI' "amqp://${username}:${password}@${OPENSHIFT_RABBITMQ_BROKER_IP}:${OPENSHIFT_RABBITMQ_BROKER_PORT}" "$envdir"
+set_env_var 'OPENSHIFT_RABBITMQ_URI' "$conn_url" "$envdir"
 
 # Generate the correct configuration now.  Have to do it manually,
 # since the ERB processing step is already done.
@@ -25,7 +25,6 @@ export OPENSHIFT_RABBITMQ_PASSWORD="$password"
 erb "$OPENSHIFT_RABBITMQ_DIR/conf/rabbitmq.config.erb.install" > "$OPENSHIFT_RABBITMQ_DIR/conf/rabbitmq.config"
 
 
-conn_url="amqp://${username}@${OPENSHIFT_RABBITMQ_BROKER_IP}:${OPENSHIFT_RABBITMQ_BROKER_PORT}/"
 
 client_result ""
 client_result "RabbitMQ broker setup.  Please make note of these credentials:"
@@ -33,7 +32,7 @@ client_result ""
 client_result "   User: $username"
 client_result "   Password: $password"
 client_result ""
-client_result "Connection URL (minus password): $conn_url"
+client_result "Connection URL: $conn_url"
 client_result ""
 
 cart_props "connection_url=${conn_url}"

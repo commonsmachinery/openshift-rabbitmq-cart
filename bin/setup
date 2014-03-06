@@ -5,6 +5,13 @@ set -u
 
 source "$OPENSHIFT_CARTRIDGE_SDK_BASH"
 
+if [ -z `type -t erl` ]
+then
+    client_error 'Erlang must be installed. See https://github.com/commonsmachinery/openshift-rabbitmq-cart#installation'
+    exit 1
+fi    
+    
+
 # TODO: use version argument or manifest file
 version=3.2.4
 
@@ -48,10 +55,10 @@ function get_source() {
         then
             if echo "$md5 $tgz" | md5sum -c --quiet
             then
-                client_result "Using previously downloaded $tgz"
+                client_message "Using previously downloaded $tgz"
                 return
             else
-                client_result "Incorrect checksum on $tgz, refetching it"
+                client_message "Incorrect checksum on $tgz, refetching it"
                 rm "$tgz"
             fi
         fi
@@ -62,7 +69,7 @@ function get_source() {
 
         if echo "$md5 $tgz" | md5sum -c --quiet
         then
-            client_result "Fetched $tgz"
+            client_message "Fetched $tgz"
             return
         else
             client_error "Incorrect checksum on fetched $tgz"
@@ -78,6 +85,9 @@ get_source "$rabbitmq_tgz" "$rabbitmq_url" "$rabbitmq_md5"
     cd "$destdir"
     tar xzf "$OPENSHIFT_TMP_DIR/$rabbitmq_tgz"
     mv "$rabbitmq_dir" rabbitmq
+
+    # Teach rabbitmq to use fully qualified hostnames to support clustering
+    sed -i 's/-sname/-name/' "$f" rabbitmq/sbin/*
 
     # But we have to do some Erlang configuration
     cat >rabbitmq/etc/rabbitmq/rabbitmq-env.conf <<EOF

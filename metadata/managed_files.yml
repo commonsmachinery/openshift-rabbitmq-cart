@@ -1,10 +1,11 @@
 locked_files:
 - bin/
 - bin/*
-- conf/
 - conf/rabbitmq.config.erb.install
 - env/
 - env/*
+- hooks/
+- hooks/*
 - metadata/
 - metadata/*
 - versions/

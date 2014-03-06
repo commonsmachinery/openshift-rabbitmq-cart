@@ -119,7 +119,7 @@
    {default_vhost,       <<"/">>},
    {default_user,        <<"<%= ENV['OPENSHIFT_RABBITMQ_USERNAME'] %>">>},
    {default_pass,        <<"<%= ENV['OPENSHIFT_RABBITMQ_PASSWORD'] %>">>},
-   {default_permissions, [<<".*">>, <<".*">>, <<".*">>]},
+   {default_permissions, [<<".*">>, <<".*">>, <<".*">>]}
 
    %% Tags for default user
    %%

@@ -1,4 +1,112 @@
-#!/bin/sh
+#!/bin/bash
 
-# Nothing to do here
-exit 0
+set -e
+
+source "$OPENSHIFT_CARTRIDGE_SDK_BASH"
+
+bindir="$OPENSHIFT_RABBITMQ_DIR/versions/$OPENSHIFT_RABBITMQ_VERSION/rabbitmq/sbin"
+
+if [ ! -x "$bindir/rabbitmq-server" ]
+then
+    client_error "Can't find RabbitMQ installation for version $OPENSHIFT_RABBITMQ_VERSION"
+    exit 1
+fi    
+
+function status() {
+    if is_cartridge_running
+    then
+        client_result "Application is running"
+    else
+        client_result "Application is not running"
+    fi
+}  #  End of function  status.
+
+
+function start() {
+    echo "Starting RabbitMQ cartridge"
+
+    if is_cartridge_running
+    then
+        echo "RabbitMQ is already running"
+        return 0
+    fi
+
+    # Starting with -detached doesn't give us a pid file...
+    "$bindir/rabbitmq-server" </dev/null >/dev/null 2>&1 &
+    
+    if ! "$bindir/rabbitmqctl" wait "$RABBITMQ_PID_FILE"
+    then
+        client_error "Error waiting for RabbitMQ server to start"
+        return 1
+    fi
+
+    return 0
+}
+
+
+function stop() {
+    echo "Stopping RabbitMQ cartridge"
+
+    if ! is_cartridge_running
+    then
+        echo "RabbitMQ is already stopped"
+        return 0
+    fi
+
+    # Tell broker to stop and wait for it
+    "$bindir/rabbitmqctl" stop "$RABBITMQ_PID_FILE"
+
+    if is_cartridge_running
+    then
+        client_error "RabbitMQ server seems to be running still"
+        return 1
+    fi
+
+    return 0
+}
+
+
+function restart() {
+    if is_cartridge_running; then
+      stop
+    fi
+
+    start
+}
+
+
+function tidy() {
+    if is_cartridge_running
+    then
+        # Don't mess with the logs ourselves, let RabbitMQ do that
+        "$bindir/rabbitmqctl" rotate_logs
+    else
+        # Not running, delete ourselves
+        [ -d "$RABBITMQ_LOG_BASE" ] && rm -f "$RABBITMQ_LOG_BASE/*"
+    fi
+}
+
+
+function is_cartridge_running() {
+    [ -f "$RABBITMQ_PID_FILE" ]  ||  return 1
+    
+    nodepid=$(cat "$RABBITMQ_PID_FILE")
+    [ -n "$nodepid" ]  ||  return 1
+
+    kill -0 "$nodepid" 2>/dev/null || return 1
+
+    return 0
+}
+
+
+# Handle commands.
+case "$1" in
+    start)               start       ;;
+    restart|graceful)    restart     ;;
+    graceful-stop|stop)  stop        ;;
+    status)              status      ;;
+    tidy)                tidy        ;;
+    # TODO: snapshot/restore if applicable
+    *) exit 0;
+esac
+

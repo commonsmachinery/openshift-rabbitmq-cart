@@ -34,11 +34,14 @@ Cart-Data:
   Description: Password for admin user on RabbitMQ broker
 - Key: connection_url
   Type: cart_data
-  Description: AMQP broker URL (without password)
+  Description: AMQP broker URL
 Endpoints:
   - Private-IP-Name: BROKER_IP
     Private-Port-Name: BROKER_PORT
     Private-Port: 5672
+    Public-Port-Name: BROKER_PROXY_PORT
     Protocols:
      - amqp
-     
+Publishes:
+  publish-amqp-url:
+    Type: "ENV:NET_TCP:amqp"
