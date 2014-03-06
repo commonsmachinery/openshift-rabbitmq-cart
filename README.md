@@ -9,6 +9,10 @@ Openshift cartridge providing the RabbitMQ message broker.
 Installation
 ------------
 
+Add the cartridge from github:
+
+    rhc cartridge add https://raw.github.com/commonsmachinery/openshift-rabbitmq-cart/master/metadata/manifest.yml -a MY_APP
+
 The cartridge setup have to fetch the Erlang engine and Rabbit MQ
 source code archives.  It will save them in /tmp and reuse them if
 present when it has to re-setup, so you can speed up the cartridge add
