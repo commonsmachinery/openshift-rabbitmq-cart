@@ -8,11 +8,6 @@ source "$OPENSHIFT_CARTRIDGE_SDK_BASH"
 # TODO: use version argument or manifest file
 version=3.2.4
 
-erlang_tgz="otp_src_R16B03-1.tar.gz"
-erlang_dir="otp_src_R16B03-1"
-erlang_url="https://packages.erlang-solutions.com/erlang/esl-erlang-src/$erlang_tgz"
-erlang_md5="e5ece977375197338c1b93b3d88514f8"
-
 rabbitmq_tgz="rabbitmq-server-generic-unix-3.2.4.tar.gz"
 rabbitmq_dir="rabbitmq_server-3.2.4"
 rabbitmq_url="https://www.rabbitmq.com/releases/rabbitmq-server/v3.2.4/$rabbitmq_tgz"
@@ -76,38 +71,7 @@ function get_source() {
     )
 }
 
-get_source "$erlang_tgz" "$erlang_url" "$erlang_md5"
 get_source "$rabbitmq_tgz" "$rabbitmq_url" "$rabbitmq_md5"
-
-# Build as small an Erlang engine as we dare
-(
-    rm -rf "$builddir"
-    mkdir -p "$builddir"
-    cd "$builddir"
-    tar xzf "$OPENSHIFT_TMP_DIR/$erlang_tgz"
-    cd "$erlang_dir"
-    
-    ./configure --prefix="$destdir/erlang" \
-        --without-asn1 --without-common_test --without-cosEvent \
-        --without-cosEventDomain --without-cosFileTransfer \
-        --without-cosNotification --without-cosProperty --without-cosTime \
-        --without-cosTransactions --without-debugger --without-dialyzer \
-        --without-diameter --without-edoc --without-eldap --without-erl_docgen \
-        --without-et --without-eunit --without-gs --without-hipe --without-ic \
-        --without-megaco --without-observer --without-odbc \
-        --without-orber --without-os_mon --without-otp_mibs --without-percept \
-        --without-pman --without-reltool --without-sasl --without-snmp \
-        --without-ssh --without-syntax_tools --without-test_server \
-        --without-toolbar --without-tools --without-tv --without-webtool \
-        --without-wx
-
-    make
-    make install
-) >"$OPENSHIFT_TMP_DIR/erlang-build.log" 2>&1
-
-# Save space, we don't need this any longer
-rm -rf "$builddir"
-
 
 # RabbitMQ can simply be unpacked, nothing to build
 (
@@ -123,7 +87,6 @@ rm -rf "$builddir"
 ERL_CRASH_DUMP=/dev/null
 export ERL_CRASH_DUMP
 EOF
-    echo "ERL_DIR=$destdir/erlang/bin/" >>rabbitmq/etc/rabbitmq/rabbitmq-env.conf
 
 cat >>rabbitmq/etc/rabbitmq/rabbitmq-env.conf <<EOF
 
@@ -136,7 +99,7 @@ EOF
 )
 
 # Enable the management plugin
-sh -x "$destdir/rabbitmq/sbin/rabbitmq-plugins" enable rabbitmq_management
+"$destdir/rabbitmq/sbin/rabbitmq-plugins" enable rabbitmq_management
 
 # Set up environment that depends on the version
 set_env_var OPENSHIFT_RABBITMQ_PATH_ELEMENT "$destdir/rabbitmq/sbin" "$envdir"
