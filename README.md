@@ -1,16 +1,19 @@
 openshift-rabbitmq-cart
 =======================
 
-Openshift cartridge providing the RabbitMQ message broker.
-
-*NOTE: This version does not yet support scaled apps!*
+Openshift cartridge providing the RabbitMQ message broker.  It does
+not yet support clustered setups, but ought to work in a scaled
+application.
 
 
 Installation
 ------------
 
-This cartridge depends on Erlang being installed in the system.  Ask
-your Openshift administrator to run this:
+This cartridge depends on Erlang being installed in the system.  The
+reason is that the runtime environment is a bit too big to be possible
+to build or install as a cartridge without timeouts.
+
+Ask your Openshift administrator to run this:
 
     yum install erlang
 
@@ -22,11 +25,15 @@ Add the cartridge from github:
 
     rhc cartridge add https://raw.github.com/commonsmachinery/openshift-rabbitmq-cart/master/metadata/manifest.yml -a MY_APP
 
-The cartridge setup have to fetch the Erlang engine and Rabbit MQ
-source code archives.  It will save them in /tmp and reuse them if
-present when it has to re-setup, so you can speed up the cartridge add
-operation by downloading them manually.  ssh onto the gear and run:
 
-    wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.2.4/rabbitmq-server-generic-unix-3.2.4.tar.gz
+Environment variables
+---------------------
 
-Then add the cartridge as normal.
+These are relevant to applications and other gears:
+
+* `OPENSHIFT_RABBITMQ_URI`: Full `amqp:` URI, which is probably the
+  only of these variables that you need to use.
+* `OPENSHIFT_RABBITMQ_BROKER_HOST`: Hostname or IP of the broker
+* `OPENSHIFT_RABBITMQ_BROKER_PORT`: Port the broker is listening on
+* `OPENSHIFT_RABBITMQ_USERNAME`: Admin account username
+* `OPENSHIFT_RABBITMQ_PASSWORD`: Admin account password
