@@ -87,7 +87,7 @@ get_source "$rabbitmq_tgz" "$rabbitmq_url" "$rabbitmq_md5"
     mv "$rabbitmq_dir" rabbitmq
 
     # Teach rabbitmq to use fully qualified hostnames to support clustering
-    sed -i 's/-sname/-name/' "$f" rabbitmq/sbin/*
+    sed -i 's/-sname/-name/' rabbitmq/sbin/*
 
     # But we have to do some Erlang configuration
     cat >rabbitmq/etc/rabbitmq/rabbitmq-env.conf <<EOF
