@@ -11,4 +11,4 @@ locked_files:
 - versions/*
 setup_rewritten:
 - env/OPENSHIFT_RABBITMQ_PATH_ELEMENT
-- env/ERL_DIR
+- env/OPENSHIFT_RABBITMQ_VERSION

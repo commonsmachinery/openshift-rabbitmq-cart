@@ -94,7 +94,7 @@ get_source "$rabbitmq_tgz" "$rabbitmq_url" "$rabbitmq_md5"
         --without-cosTransactions --without-debugger --without-dialyzer \
         --without-diameter --without-edoc --without-eldap --without-erl_docgen \
         --without-et --without-eunit --without-gs --without-hipe --without-ic \
-        --without-inets --without-megaco --without-observer --without-odbc \
+        --without-megaco --without-observer --without-odbc \
         --without-orber --without-os_mon --without-otp_mibs --without-percept \
         --without-pman --without-reltool --without-sasl --without-snmp \
         --without-ssh --without-syntax_tools --without-test_server \
@@ -108,16 +108,38 @@ get_source "$rabbitmq_tgz" "$rabbitmq_url" "$rabbitmq_md5"
 # Save space, we don't need this any longer
 rm -rf "$builddir"
 
+
 # RabbitMQ can simply be unpacked, nothing to build
 (
     cd "$destdir"
     tar xzf "$OPENSHIFT_TMP_DIR/$rabbitmq_tgz"
     mv "$rabbitmq_dir" rabbitmq
+
+    # But we have to do some Erlang configuration
+    cat >rabbitmq/etc/rabbitmq/rabbitmq-env.conf <<EOF
+# Env vars specific for running Erlang.  The rest of the config is
+# handled with cartridge env/* to allow easy user overrides.
+
+ERL_CRASH_DUMP=/dev/null
+export ERL_CRASH_DUMP
+EOF
+    echo "ERL_DIR=$destdir/erlang/bin/" >>rabbitmq/etc/rabbitmq/rabbitmq-env.conf
+
+cat >>rabbitmq/etc/rabbitmq/rabbitmq-env.conf <<EOF
+
+    # Erlang sets ~/.erlang.cookie with no apparent way to change the
+    # file name.  So override HOME and hope that doesn't break
+    # anything...
+EOF
+    echo "HOME=$OPENSHIFT_RABBITMQ_DIR/data" >>rabbitmq/etc/rabbitmq/rabbitmq-env.conf
+    echo "export HOME" >>rabbitmq/etc/rabbitmq/rabbitmq-env.conf
 )
 
 # Enable the management plugin
-"$destdir/rabbitmq/sbin/rabbitmq-plugins" enable rabbitmq_management
+sh -x "$destdir/rabbitmq/sbin/rabbitmq-plugins" enable rabbitmq_management
 
 # Set up environment that depends on the version
 set_env_var OPENSHIFT_RABBITMQ_PATH_ELEMENT "$destdir/rabbitmq/sbin" "$envdir"
-set_env_var ERL_DIR "$destdir/erlang/bin" "$envdir"
+set_env_var OPENSHIFT_RABBITMQ_VERSION "$version" "$envdir"
+
+touch "$readyfile"

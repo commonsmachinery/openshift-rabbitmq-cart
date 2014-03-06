@@ -5,7 +5,7 @@ set -u
 
 source "$OPENSHIFT_CARTRIDGE_SDK_BASH"
 
-envdir="$OPENSHIFT_RABBTMQ_DIR/env"
+envdir="$OPENSHIFT_RABBITMQ_DIR/env"
 
 echo 'Generating username and password'
 
@@ -25,7 +25,7 @@ export OPENSHIFT_RABBITMQ_PASSWORD="$password"
 erb "$OPENSHIFT_RABBITMQ_DIR/conf/rabbitmq.config.erb.install" > "$OPENSHIFT_RABBITMQ_DIR/conf/rabbitmq.config"
 
 
-conn_url="amqp://${username}@${OPENSHIFT_RABBITMQ_BROKER_HOST}:${OPENSHIFT_RABBITMQ_BROKER_PORT}"
+conn_url="amqp://${username}@${OPENSHIFT_RABBITMQ_BROKER_HOST}:${OPENSHIFT_RABBITMQ_BROKER_PORT}/"
 
 client_result ""
 client_result "RabbitMQ broker setup.  Please make note of these credentials:"

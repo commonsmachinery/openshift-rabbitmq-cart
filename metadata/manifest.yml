@@ -1,8 +1,8 @@
 Name: rabbitmq
 Cartridge-Short-Name: RABBITMQ
-Cartridge-Version: '1.0.0'
+Cartridge-Version: '0.1'
 Compatible-Versions:
-  - '1.0.0'
+  - '0.1'
 Cartridge-Vendor: commonsmachinery
 Categories:
   - embedded
@@ -25,7 +25,20 @@ Provides:
 Scaling:
   Min: 1
   Max: 1
+Cart-Data:
+- Key: username
+  Type: cart_data
+  Description: Admin user on RabbitMQ broker
+- Key: password
+  Type: cart_data
+  Description: Password for admin user on RabbitMQ broker
+- Key: connection_url
+  Type: cart_data
+  Description: AMQP broker URL (without password)
 Endpoints:
   - Private-IP-Name: BROKER_IP
     Private-Port-Name: BROKER_PORT
     Private-Port: 5672
+    Protocols:
+     - amqp
+     
