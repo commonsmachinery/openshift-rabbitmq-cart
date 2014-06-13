@@ -53,7 +53,7 @@ function get_source() {
         cd "$OPENSHIFT_TMP_DIR"
         if [ -f "$tgz" ]
         then
-            if echo "$md5 $tgz" | md5sum -c --quiet
+            if echo "$md5  $tgz" | md5sum -c --quiet
             then
                 client_message "Using previously downloaded $tgz"
                 return
