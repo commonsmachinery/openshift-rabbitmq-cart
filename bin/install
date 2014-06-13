@@ -11,7 +11,7 @@ echo 'Generating username and password'
 
 username=$(generate_username)
 password=$(generate_password)
-conn_url="amqp://${username}:${password}@${OPENSHIFT_RABBITMQ_BROKER_IP}:${OPENSHIFT_RABBITMQ_BROKER_PORT}//"
+conn_url="amqp://${username}:${password}@${OPENSHIFT_RABBITMQ_BROKER_HOST}:${OPENSHIFT_RABBITMQ_BROKER_PORT}//"
 
 set_env_var 'OPENSHIFT_RABBITMQ_USERNAME' "$username" "$envdir"
 set_env_var 'OPENSHIFT_RABBITMQ_PASSWORD' "$password" "$envdir"
