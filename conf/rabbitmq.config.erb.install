@@ -262,6 +262,10 @@
    %%             {ssl_opts, [{cacertfile, "/path/to/cacert.pem"},
    %%                         {certfile,   "/path/to/cert.pem"},
    %%                         {keyfile,    "/path/to/key.pem"}]}]},
+   {listener, [{port, 15672},
+               {ip, "<%= ENV['OPENSHIFT_RABBITMQ_BROKER_HOST'] %>"}
+              ]}
+               , {redirect_old_port, false}
 
    %% Configure how long aggregated data (such as message rates and queue
    %% lengths) is retained. Please read the plugin's documentation in
