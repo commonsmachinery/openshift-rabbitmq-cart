@@ -42,6 +42,18 @@ Endpoints:
     Public-Port-Name: BROKER_PROXY_PORT
     Protocols:
      - amqp
+
+  - Private-IP-Name: BROKER_HOST
+    Private-Port-Name: ADMIN_PORT
+    Private-Port: 15672
+    Public-Port-Name: ADMIN_PROXY_PORT
+    Protocols: [http]
+    Mappings:
+      - Frontend:      'rabbitgui'
+        Backend:       ''
+      - Frontend:      'api'
+        Backend:       'api'
+
 Publishes:
   publish-amqp-url:
     Type: "ENV:NET_TCP:amqp"
